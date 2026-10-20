@@ -1,0 +1,87 @@
+---
+import type { Dict } from '../i18n';
+
+interface Props { t: Dict }
+const { t } = Astro.props;
+const repo = 'https://github.com/PohTeyToe/riipen-permalution';
+---
+<aside class="concept" aria-label={t.concept.aria}>
+  <div class="wrap concept-row">
+    <p>{t.concept.label}{t.concept.translated && <> <span class="tr">{t.concept.translated}</span></>}</p>
+    <div class="concept-actions">
+      <button type="button" class="claims-toggle" aria-pressed="false" data-claims-toggle>
+        <span class="sw" aria-hidden="true"></span>{t.concept.claims}
+      </button>
+      <a href={repo} rel="noopener" target="_blank">{t.concept.code}</a>
+    </div>
+  </div>
+</aside>
+
+<header class="site-header">
+  <div class="wrap h-row">
+    <a class="wordmark" href={t.nav.switchLang === 'fr' ? '/' : '/fr/'}>Permalution</a>
+    <nav aria-label={t.nav.label}>
+      <ul>
+        <li><a href="#projects">{t.nav.projects}</a></li>
+        <li><a href="#yield">{t.nav.yield}</a></li>
+        <li><a href="#how">{t.nav.how}</a></li>
+        <li><a href="#investors">{t.nav.investors}</a></li>
+        <li><a href="#faq">{t.nav.faq}</a></li>
+      </ul>
+    </nav>
+    <details class="m-menu" data-menu>
+      <summary>{t.nav.menu}</summary>
+      <ul>
+        <li><a href="#projects">{t.nav.projects}</a></li>
+        <li><a href="#yield">{t.nav.yield}</a></li>
+        <li><a href="#how">{t.nav.how}</a></li>
+        <li><a href="#investors">{t.nav.investors}</a></li>
+        <li><a href="#faq">{t.nav.faq}</a></li>
+      </ul>
+    </details>
+    <div class="h-actions">
+      <a class="lang" href={t.nav.switchHref} hreflang={t.nav.switchLang} lang={t.nav.switchLang}>
+        <span class="visually-hidden">{t.nav.switchTo}</span><span aria-hidden="true">{t.nav.switchToShort}</span>
+      </a>
+      <a class="btn btn-primary h-cta" href="#request" data-topic="site"><span class="cta-long">{t.nav.cta}</span><span class="cta-short" aria-hidden="true">{t.nav.ctaShort}</span></a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .concept { background: var(--ink); color: var(--fog-1); font-size: 0.84rem; }
+  .concept-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 1rem; padding-block: 0.45rem; }
+  .concept a { color: var(--fog-1); }
+  .tr { opacity: 0.85; }
+  .concept-actions { display: flex; align-items: center; gap: 1rem; }
+  .claims-toggle { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 36px; padding: 0.2rem 0.2rem; background: none; border: 0; color: var(--fog-0); font: 600 0.84rem/1 var(--font-body); cursor: pointer; }
+  .sw { position: relative; width: 32px; height: 18px; border-radius: 999px; background: oklch(0.38 0.015 255); transition: background-color 180ms var(--ease-out); }
+  .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--fog-0); transition: transform 200ms var(--ease-out); }
+  .claims-toggle[aria-pressed='true'] .sw { background: var(--water); }
+  .claims-toggle[aria-pressed='true'] .sw::after { transform: translateX(14px); }
+
+  .site-header { border-bottom: 1px solid var(--line); background: var(--fog-0); }
+  .h-row { display: flex; align-items: center; gap: 1.5rem; min-height: 68px; }
+  .wordmark { font-family: var(--font-display); font-variation-settings: 'wdth' 125; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+  nav { margin-left: auto; }
+  nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; }
+  nav a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+  nav a:hover { text-decoration: underline; }
+  .h-actions { display: flex; align-items: center; gap: 0.75rem; }
+  .lang { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; border-radius: 999px; border: 1.5px solid var(--line); color: var(--ink); font-weight: 700; text-decoration: none; font-size: 0.9rem; }
+  .lang:hover { border-color: var(--ink); }
+  .site-header { position: relative; z-index: 5; }
+  .m-menu { display: none; }
+  .m-menu summary { list-style: none; display: inline-grid; place-items: center; min-height: 44px; padding: 0 0.9rem; border-radius: 999px; border: 1.5px solid var(--line); font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .m-menu summary::-webkit-details-marker { display: none; }
+  .m-menu[open] summary { border-color: var(--ink); }
+  .m-menu ul { position: absolute; left: 0; right: 0; top: 100%; margin: 0; padding: 0.5rem var(--gutter) 1rem; list-style: none; background: var(--fog-0); border-bottom: 1px solid var(--line); box-shadow: 0 12px 24px oklch(0.2 0.02 255 / 0.08); }
+  .m-menu a { display: block; padding: 0.75rem 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 650; font-size: var(--step-1); }
+  @media (max-width: 1060px) { nav { display: none; } .m-menu { display: block; margin-left: auto; } }
+  .cta-short { display: none; }
+  @media (max-width: 520px) {
+    .cta-long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .cta-short { display: inline; }
+    .concept-row { padding-block: 0.5rem; }
+  }
+</style>

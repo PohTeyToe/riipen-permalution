@@ -1,0 +1,45 @@
+---
+import Claim from './Claim.astro';
+import { claim } from '../data/claims';
+import { SRC } from '../data/sources';
+import type { Dict } from '../i18n';
+
+interface Props { t: Dict }
+const { t } = Astro.props;
+const press = claim('press').sources;
+---
+<section class="proof" aria-labelledby="proof-h">
+  <div class="wrap">
+    <p class="eyebrow">{t.proof.eyebrow}</p>
+    <h2 id="proof-h">{t.proof.heading}</h2>
+    <ul class="awards">
+      {t.proof.awards.map((a) => (
+        <li>
+          <span class="what"><Claim id={a.claim}>{a.what}</Claim></span>
+          <span class="detail">{a.detail}</span>
+        </li>
+      ))}
+    </ul>
+    <p class="press">
+      <span class="press-label">{t.proof.pressLabel}</span>
+      <Claim id="press">
+        {t.proof.press.map((name, i) => (
+          <>{i > 0 && <span class="sep" aria-hidden="true">/</span>}<a href={SRC[press[i]].url} rel="noopener" target="_blank">{name}</a></>
+        ))}
+      </Claim>
+    </p>
+  </div>
+</section>
+
+<style>
+  .proof { padding-block: clamp(3rem, 2rem + 4vw, 6rem); }
+  .proof .wrap { display: grid; gap: 1rem; }
+  .awards { list-style: none; padding: 0; margin: 0.75rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); border-top: 2px solid var(--ink); }
+  .awards li { display: grid; gap: 0.15rem; align-content: start; padding: 0.95rem 0.25rem 0.95rem 0; border-bottom: 1px solid var(--line); }
+  .what { font-family: var(--font-display); font-variation-settings: 'wdth' 108; font-weight: 700; font-size: var(--step-1); line-height: 1.2; }
+  .detail { color: var(--ink-2); font-size: var(--step--1); }
+  .press { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.8rem; margin-top: 0.5rem; }
+  .press-label { font-weight: 700; margin-right: 0.4rem; }
+  .press a:not(.claim-mark) { color: var(--ink); font-weight: 600; }
+  .sep { color: var(--ink-3); margin: 0 0.5rem; }
+</style>

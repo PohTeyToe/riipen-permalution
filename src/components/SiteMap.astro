@@ -1,0 +1,224 @@
+---
+import Rich from './Rich.astro';
+import { frame, landPath, MAP_H, MAP_W, parallel, project } from '../lib/map';
+import { HQ, SITES } from '../data/sites';
+import { claim } from '../data/claims';
+import { SRC } from '../data/sources';
+import type { Dict } from '../i18n';
+
+interface Props { t: Dict }
+const { t } = Astro.props;
+
+const land = landPath();
+const pct = (lon: number, lat: number) => {
+  const [x, y] = project(lon, lat);
+  return { left: `${((x / MAP_W) * 100).toFixed(2)}%`, top: `${((y / MAP_H) * 100).toFixed(2)}%` };
+};
+// Decorative fog over coasts and highlands known for it. Not data.
+const fog = [
+  { lon: -123.5, lat: 38, rx: 34, ry: 9 },
+  { lon: -112, lat: 26, rx: 30, ry: 8 },
+  { lon: -97.5, lat: 19.8, rx: 22, ry: 7 },
+  { lon: -77.5, lat: -12, rx: 30, ry: 8 },
+  { lon: -71.5, lat: -25, rx: 26, ry: 8 },
+  { lon: -54, lat: 46.5, rx: 30, ry: 9 },
+  { lon: 55.5, lat: 17.5, rx: 26, ry: 8 },
+].map((f, i) => ({ ...f, xy: project(f.lon, f.lat), i }));
+const hq = pct(HQ.lon, HQ.lat);
+const panelId = (id: string) => `site-${id}`;
+---
+<div class="map-block" data-map data-frame={JSON.stringify(frame)} data-w={MAP_W} data-h={MAP_H} data-dirs={t.map.dirs}>
+  <div class="map-head">
+    <h2 class="map-title" id="projects">{t.map.heading}</h2>
+    <div class="site-tabs" role="tablist" aria-labelledby="projects">
+      {SITES.map((s, i) => (
+        <button
+          role="tab"
+          class="site-tab"
+          id={`tab-${s.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          aria-controls={panelId(s.id)}
+          tabindex={i === 0 ? 0 : -1}
+          data-site={s.id}
+        >
+          <span class="tab-dot" aria-hidden="true"></span>{t.sites[s.id].short}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="map-stage" data-stage>
+    <svg class="map-svg" viewBox={`0 0 ${MAP_W} ${MAP_H}`} aria-hidden="true" focusable="false">
+      <defs>
+        <pattern id="landHatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="7" height="7" fill="var(--sand)" />
+          <path d="M0 0V7" stroke="var(--sand-deep)" stroke-width="1" />
+        </pattern>
+        <filter id="fogBlur" x="-50%" y="-80%" width="200%" height="260%">
+          <feGaussianBlur stdDeviation="6" />
+        </filter>
+      </defs>
+      <rect width={MAP_W} height={MAP_H} class="ocean" />
+      <path d={parallel(23.44)} class="tropic" />
+      <path d={parallel(-23.44)} class="tropic" />
+      <path d={parallel(0)} class="tropic equator" />
+      <path d={land} class="land" />
+      <g filter="url(#fogBlur)" class="fog">
+        {fog.map((f) => (
+          <ellipse cx={f.xy[0]} cy={f.xy[1]} rx={f.rx} ry={f.ry} style={`--i:${f.i}`} />
+        ))}
+      </g>
+    </svg>
+
+    <span class="hq" style={hq} title={t.map.hq}><span class="hq-mark" aria-hidden="true"></span><span class="hq-label">Sherbrooke</span></span>
+
+    {SITES.map((s, i) => (
+      <button
+        class="pin"
+        style={pct(s.lon, s.lat)}
+        data-site={s.id}
+        data-side={s.id === 'coatepec' ? 'right' : 'left'}
+        aria-hidden="true"
+        tabindex="-1"
+        aria-pressed={i === 0 ? 'true' : 'false'}
+      >
+        <span class="pin-dot"></span><span class="pin-label">{t.sites[s.id].short}</span>
+      </button>
+    ))}
+
+    <span class="drop-pin" data-drop hidden aria-hidden="true"></span>
+    <p class="map-hint">{t.map.caption}</p>
+  </div>
+
+  <div class="map-legend" aria-hidden="true">
+    <span><i class="lg-pin"></i>{t.map.legendProject}</span>
+    <span><i class="lg-hq"></i>{t.map.legendHq}</span>
+    <span><i class="lg-fog"></i>{t.map.legendFog}</span>
+  </div>
+
+  <div class="panels">
+    {SITES.map((s, i) => {
+      const site = t.sites[s.id];
+      const c = claim(s.claim);
+      return (
+        <div class="site-panel" id={panelId(s.id)} role="tabpanel" aria-labelledby={`tab-${s.id}`} hidden={i !== 0}>
+          <p class="site-status"><span class="chip">{site.status}</span> {site.partner}</p>
+          <h3>{site.name}<span class="site-country">, {site.country}</span></h3>
+          <p class="site-story"><Rich text={site.story} /></p>
+          {site.quote && (
+            <blockquote class="site-quote">
+              <p><Rich text={site.quote} /></p>
+              <footer>{site.quoteBy}</footer>
+            </blockquote>
+          )}
+          {s.approximate && <p class="site-approx">{t.map.approx}</p>}
+          <p class="site-sources">
+            <span>{t.map.sourcesLabel}:</span>{' '}
+            {c.sources.map((k, j) => (
+              <>{j > 0 && ' · '}<a href={SRC[k].url} rel="noopener" target="_blank">{SRC[k].label.split(':')[0].split(',')[0]}</a></>
+            ))}
+          </p>
+        </div>
+      );
+    })}
+    <article class="site-panel pick-panel" id="site-pick" hidden tabindex="-1" aria-live="polite">
+      <p class="site-status"><span class="chip chip-ink">{t.map.pickTitle}</span> <span data-coords></span></p>
+      <p class="site-story">{t.map.pickBody}</p>
+      <p class="pick-actions">
+        <a class="btn btn-primary" href="#request" data-pick-cta>{t.map.pickCta}</a>
+        <button class="btn btn-ghost" type="button" data-pick-clear>{t.map.pickClear}</button>
+      </p>
+    </article>
+    <p class="reported"><Rich text={t.map.reported} /></p>
+  </div>
+</div>
+
+<style>
+  .map-block { display: grid; gap: 0.9rem; min-width: 0; }
+  .map-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.6rem 1rem; }
+  .map-title { font-size: var(--step-1); font-variation-settings: 'wdth' 125; font-weight: 700; letter-spacing: 0; }
+  .site-tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .site-tab {
+    display: inline-flex; align-items: center; gap: 0.45rem; min-height: 40px; padding: 0.4rem 0.85rem;
+    border-radius: 999px; border: 1.5px solid var(--line); background: var(--fog-0); color: var(--ink);
+    font: 600 var(--step--1)/1 var(--font-body); cursor: pointer;
+    transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+  }
+  .site-tab:hover { border-color: var(--ink-3); }
+  .site-tab[aria-selected='true'] { background: var(--ink); border-color: var(--ink); color: var(--fog-0); }
+  .tab-dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--water); box-shadow: 0 0 0 2px var(--fog-0); }
+
+  .map-stage { position: relative; border-radius: 10px; overflow: hidden; background: var(--water-soft); cursor: crosshair; touch-action: manipulation; }
+  .map-svg { display: block; width: 100%; height: auto; }
+  .ocean { fill: color-mix(in oklch, var(--water-soft) 75%, var(--fog-0)); }
+  .land { fill: url(#landHatch); stroke: color-mix(in oklch, var(--earth) 55%, transparent); stroke-width: 0.8; }
+  .tropic { fill: none; stroke: color-mix(in oklch, var(--water-ink) 35%, transparent); stroke-width: 0.8; stroke-dasharray: 3 5; }
+  .equator { stroke-dasharray: none; stroke: color-mix(in oklch, var(--water-ink) 22%, transparent); }
+  .fog ellipse { fill: var(--fog-0); opacity: 0.9; animation: breathe 7s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -1.3s); transform-box: fill-box; transform-origin: center; }
+  @keyframes breathe { from { transform: translateX(-6px) scale(0.92); opacity: 0.65; } to { transform: translateX(8px) scale(1.06); opacity: 0.95; } }
+
+  .hq, .pin, .drop-pin { position: absolute; transform: translate(-50%, -50%); }
+  .hq { display: inline-flex; align-items: center; gap: 0.3rem; pointer-events: none; }
+  .hq-mark { width: 9px; height: 9px; background: var(--ink); transform: rotate(45deg); }
+  .hq-label { font: 600 0.72rem/1 var(--font-body); color: var(--ink); background: color-mix(in oklch, var(--fog-0) 80%, transparent); padding: 0.15rem 0.3rem; border-radius: 3px; }
+
+  .pin { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--water); box-shadow: 0 0 0 3px var(--fog-0), 0 1px 4px oklch(0.2 0.02 255 / 0.35); transition: transform 200ms var(--ease-out); }
+  .pin[aria-pressed='true'] .pin-dot { background: var(--water-ink); transform: scale(1.25); }
+  .pin[aria-pressed='true']::before {
+    content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 2px solid var(--water-ink);
+    animation: ring 2.2s var(--ease-out) infinite;
+  }
+  @keyframes ring { from { transform: scale(0.6); opacity: 0.9; } to { transform: scale(1.9); opacity: 0; } }
+  .pin-label {
+    position: absolute; top: 50%; transform: translateY(-50%); white-space: nowrap;
+    font: 650 0.76rem/1 var(--font-body); color: var(--ink);
+    background: color-mix(in oklch, var(--fog-0) 88%, transparent); padding: 0.2rem 0.35rem; border-radius: 3px;
+  }
+  .pin[data-side='right'] .pin-label { left: 30px; }
+  .pin[data-side='left'] .pin-label { right: 30px; }
+  .pin:hover .pin-dot { transform: scale(1.2); }
+
+  .drop-pin { width: 18px; height: 18px; border-radius: 50% 50% 50% 0; background: var(--ink); transform: translate(-50%, -100%) rotate(-45deg); box-shadow: 0 0 0 3px var(--fog-0); animation: drop 420ms var(--ease-out); }
+  @keyframes drop { from { opacity: 0; margin-top: -18px; } to { opacity: 1; margin-top: 0; } }
+
+  .map-hint {
+    position: absolute; left: 0.6rem; bottom: 0.5rem; right: 0.6rem; margin: 0; pointer-events: none;
+    font-size: 0.78rem; color: var(--ink-2);
+  }
+  .map-hint { width: fit-content; max-width: calc(100% - 1.2rem); background: color-mix(in oklch, var(--fog-0) 85%, transparent); padding: 0.2rem 0.45rem; border-radius: 4px; }
+
+  .map-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.8rem; color: var(--ink-2); }
+  .map-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .map-legend i { display: inline-block; }
+  .lg-pin { width: 10px; height: 10px; border-radius: 50%; background: var(--water); }
+  .lg-hq { width: 8px; height: 8px; background: var(--ink); transform: rotate(45deg); }
+  .lg-fog { width: 18px; height: 8px; border-radius: 50%; background: var(--fog-2); box-shadow: 0 0 6px 2px var(--fog-2); }
+
+  .panels { display: grid; gap: 0.6rem; }
+  .site-panel { display: grid; gap: 0.55rem; padding: 1rem 1.1rem 1.1rem; border-radius: 10px; background: var(--fog-1); border: 1px solid var(--line); animation: rise 360ms var(--ease-out); }
+  .site-panel:focus-visible { outline-offset: 3px; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .site-panel h3 { font-size: var(--step-2); }
+  .site-country { font-weight: 500; color: var(--ink-2); }
+  .site-status { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: var(--step--1); color: var(--ink-2); }
+  .chip { display: inline-block; padding: 0.22rem 0.55rem; border-radius: 999px; background: var(--water-ink); color: var(--fog-0); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.01em; }
+  .chip-ink { background: var(--ink); }
+  .site-story { max-width: 62ch; }
+  .site-quote { margin: 0.2rem 0 0; padding: 0 0 0 0; }
+  .site-quote p { font-family: var(--font-display); font-variation-settings: 'wdth' 100; font-weight: 600; font-size: var(--step-1); line-height: 1.25; }
+  .site-quote p::before { content: '\201C'; color: var(--water); margin-right: 0.05em; }
+  .site-quote footer { font-size: var(--step--1); color: var(--ink-2); margin-top: 0.25rem; }
+  .site-approx, .site-sources { font-size: 0.82rem; color: var(--ink-3); }
+  .site-sources a:not(.claim-mark) { color: var(--ink-2); }
+  .pick-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem; }
+  .reported { font-size: 0.85rem; color: var(--ink-2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fog ellipse, .pin[aria-pressed='true']::before, .site-panel, .drop-pin { animation: none; }
+  }
+  @media (max-width: 520px) {
+    .pin-label { display: none; }
+    .hq-label { display: none; }
+  }
+</style>

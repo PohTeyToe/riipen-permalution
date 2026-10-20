@@ -1,0 +1,37 @@
+---
+import '../styles/global.css';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  path: string; // '/' or '/fr/'
+}
+const { lang, title, description, path } = Astro.props;
+const site = Astro.site!.toString().replace(/\/$/, '');
+const alt = { en: '/', fr: '/fr/' };
+---
+<!doctype html>
+<html lang={lang === 'fr' ? 'fr-CA' : 'en-CA'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={site + path} />
+    <link rel="alternate" hreflang="en-CA" href={site + alt.en} />
+    <link rel="alternate" hreflang="fr-CA" href={site + alt.fr} />
+    <link rel="alternate" hreflang="x-default" href={site + alt.en} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={site + path} />
+    <meta property="og:locale" content={lang === 'fr' ? 'fr_CA' : 'en_CA'} />
+    <meta name="theme-color" content="#f9f7f2" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,56 @@
+---
+import Rich from './Rich.astro';
+import type { Dict } from '../i18n';
+
+interface Props { t: Dict }
+const { t } = Astro.props;
+const tabs = t.journeys.tabs;
+const keys = ['water', 'invest', 'partner', 'other'] as const;
+---
+<section class="journeys" aria-labelledby="journeys-h" id="investors">
+  <div class="wrap j-grid">
+    <div class="j-side">
+    <p class="eyebrow">{t.journeys.eyebrow}</p>
+    <h2 id="journeys-h">{t.journeys.heading}</h2>
+    <div class="j-tabs" role="tablist" aria-labelledby="journeys-h" aria-orientation="vertical" data-tabs>
+      {keys.map((k, i) => (
+        <button role="tab" id={`jt-${k}`} aria-controls={`jp-${k}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+          {tabs[k].tab}
+        </button>
+      ))}
+    </div>
+    </div>
+    <div class="j-panels">
+    {keys.map((k, i) => (
+      <div class="j-panel" role="tabpanel" id={`jp-${k}`} aria-labelledby={`jt-${k}`} hidden={i !== 0}>
+        <h3><Rich text={tabs[k].title} /></h3>
+        <p><Rich text={tabs[k].body} /></p>
+        <a class="btn btn-primary" href="#request" data-topic={tabs[k].topic}>{tabs[k].cta}</a>
+      </div>
+    ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .journeys { padding-block: clamp(3rem, 2rem + 4vw, 6rem); }
+  .j-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 1rem + 3vw, 4rem); align-items: start; }
+  .j-side { display: grid; gap: 1rem; }
+  .j-tabs { display: grid; margin-top: 0.75rem; border-top: 2px solid var(--ink); }
+  .j-tabs button {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    min-height: 60px; padding: 0.8rem 0.25rem; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--ink-2);
+    font: 700 var(--step-1)/1.2 var(--font-display); font-variation-settings: 'wdth' 110; text-align: left; cursor: pointer;
+    transition: color 160ms var(--ease-out), padding 200ms var(--ease-out);
+  }
+  .j-tabs button::after { content: '→'; font-family: var(--font-body); opacity: 0; transform: translateX(-6px); transition: opacity 160ms var(--ease-out), transform 200ms var(--ease-out); }
+  .j-tabs button:hover { color: var(--ink); }
+  .j-tabs button[aria-selected='true'] { color: var(--earth); }
+  .j-tabs button[aria-selected='true']::after { opacity: 1; transform: none; }
+  .j-panel { display: grid; gap: 1rem; justify-items: start; padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem); border-radius: 12px; background: var(--sand); animation: rise 320ms var(--ease-out); }
+  .j-panel h3 { font-size: var(--step-3); line-height: 1.05; max-width: 20ch; }
+  .j-panel p { max-width: 58ch; font-size: var(--step-1); line-height: 1.5; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .j-panel { animation: none; } }
+  @media (max-width: 860px) { .j-grid { grid-template-columns: minmax(0, 1fr); } .j-tabs button { min-height: 52px; } }
+</style>

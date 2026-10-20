@@ -1,0 +1,93 @@
+---
+import Rich from './Rich.astro';
+import { estimate, groupDigits } from '../lib/estimate';
+import { INDUSTRIAL, MAX_UNITS, DEFAULT_UNITS, totes, oneDecimal } from '../lib/totes';
+import type { Dict, Lang } from '../i18n';
+
+interface Props { t: Dict; lang: Lang }
+const { t, lang } = Astro.props;
+const sep = lang === 'fr' ? ' ' : ',';
+const mark = lang === 'fr' ? ',' : '.';
+const e = estimate(DEFAULT_UNITS, INDUSTRIAL);
+const cells = totes(DEFAULT_UNITS);
+const and = lang === 'fr' ? 'à' : 'to';
+---
+<section class="estimate" id="yield" aria-labelledby="yield-h" data-estimate data-sep={sep} data-mark={mark} data-to={and}>
+  <div class="wrap est-grid">
+    <div class="est-copy">
+      <p class="eyebrow">{t.estimate.eyebrow}</p>
+      <h2 id="yield-h">{t.estimate.heading}</h2>
+      <p><Rich text={t.estimate.intro} /></p>
+      <p class="est-small"><Rich text={t.estimate.small} /></p>
+      <a class="btn btn-primary" href="#request" data-topic="site">{t.estimate.cta}</a>
+    </div>
+
+    <div class="est-tool">
+      <div class="slider-row">
+        <label for="units">{t.estimate.sliderLabel}</label>
+        <output id="units-out" for="units" data-units-out>{DEFAULT_UNITS}</output>
+      </div>
+      <input id="units" type="range" min="1" max={MAX_UNITS} step="1" value={DEFAULT_UNITS} data-units aria-describedby="est-result" />
+      <div class="collectors" aria-hidden="true" data-collectors>
+        {Array.from({ length: MAX_UNITS }, (_, i) => <span class:list={['net', { on: i < DEFAULT_UNITS }]}></span>)}
+      </div>
+
+      <p class="est-result" id="est-result" aria-live="polite">
+        <span class="big" data-litres>{groupDigits(e.litresMin, sep)} {and} {groupDigits(e.litresMax, sep)}</span>
+        <span class="unit">{t.estimate.perDay}</span>
+      </p>
+
+      <div class="totes" aria-hidden="true" data-totes>
+        {cells.map((c) => <span class="tote" style={`--lo:${c.low};--hi:${c.high}`}><i></i><b></b></span>)}
+      </div>
+      <p class="tote-sum"><strong data-totes-text>{oneDecimal(e.litresMin / 1000, mark)} {and} {oneDecimal(e.litresMax / 1000, mark)}</strong> {t.estimate.totes}. {t.estimate.toteUnit}</p>
+      <p class="tote-legend">
+        <span class="lg"><i class="tote-key full"></i>{t.estimate.toteLegendFull}</span>
+        <span class="lg"><i class="tote-key range"></i>{t.estimate.toteLegendRange}</span>
+      </p>
+      <p class="est-note">{t.estimate.note}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .estimate { background: var(--earth); color: var(--earth-ink); padding-block: clamp(3rem, 2rem + 4vw, 6rem); }
+  .est-grid { display: grid; gap: clamp(1.5rem, 1rem + 3vw, 4rem); grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; }
+  .est-copy { display: grid; gap: 1rem; justify-items: start; }
+  .estimate .eyebrow { color: var(--fog-1); }
+  .estimate h2 { color: var(--fog-0); }
+  .est-small { font-size: var(--step--1); opacity: 0.92; }
+  .estimate .btn-primary { background: var(--fog-0); color: var(--ink); }
+  .estimate .btn-primary:hover { background: var(--sand); }
+  .estimate :global(.claim-mark) { background: var(--fog-0) !important; color: var(--ink) !important; }
+  .estimate :global([data-claims='on']) .claim, :global([data-claims='on']) .estimate :global(.claim) { color: var(--ink); }
+
+  .est-tool { background: var(--earth-deep); border-radius: 12px; padding: clamp(1rem, 0.7rem + 1.5vw, 1.75rem); display: grid; gap: 0.9rem; }
+  .slider-row { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
+  .slider-row output { font-family: var(--font-display); font-variation-settings: 'wdth' 125; font-size: var(--step-2); }
+  input[type='range'] { width: 100%; accent-color: var(--water-soft); height: 32px; margin: 0; cursor: pointer; }
+
+  .collectors { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; }
+  .net { aspect-ratio: 1 / 1.1; border: 1.5px solid color-mix(in oklch, var(--earth-ink) 30%, transparent); border-radius: 2px; transition: background-color 180ms var(--ease-out), border-color 180ms var(--ease-out); }
+  .net.on { border-color: var(--fog-0); background: repeating-linear-gradient(45deg, transparent 0 3px, color-mix(in oklch, var(--fog-0) 60%, transparent) 3px 4px), repeating-linear-gradient(-45deg, transparent 0 3px, color-mix(in oklch, var(--fog-0) 60%, transparent) 3px 4px); }
+
+  .est-result { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.6rem; }
+  .big { font-family: var(--font-display); font-variation-settings: 'wdth' 118; font-weight: 780; font-size: var(--step-3); line-height: 1; color: var(--fog-0); font-variant-numeric: tabular-nums; }
+  .unit { font-weight: 600; }
+
+  .totes { display: flex; flex-wrap: wrap; gap: 5px; min-height: 34px; }
+  .tote { position: relative; width: 26px; height: 28px; border: 2px solid var(--fog-0); border-radius: 3px; overflow: hidden;
+    background: repeating-linear-gradient(90deg, transparent 0 7px, color-mix(in oklch, var(--fog-0) 35%, transparent) 7px 8px); }
+  .tote i, .tote b { position: absolute; inset: auto 0 0 0; transition: height 260ms var(--ease-out); }
+  .tote i { height: calc(var(--hi) * 100%); background: repeating-linear-gradient(45deg, var(--water) 0 3px, transparent 3px 6px); }
+  .tote b { height: calc(var(--lo) * 100%); background: var(--water); }
+  .tote-legend { font-size: var(--step--1); display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; align-items: center; }
+  .tote-sum strong { font-size: var(--step-1); }
+  .lg { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .tote-key { display: inline-block; width: 12px; height: 13px; border: 1.5px solid var(--fog-0); border-radius: 2px; }
+  .tote-key.full { background: var(--water); }
+  .tote-key.range { background: repeating-linear-gradient(45deg, var(--water) 0 2px, transparent 2px 4px); }
+  .est-note { font-size: 0.82rem; opacity: 0.9; max-width: 60ch; }
+
+  @media (max-width: 860px) { .est-grid { grid-template-columns: minmax(0, 1fr); } .collectors { grid-template-columns: repeat(10, 1fr); } }
+</style>

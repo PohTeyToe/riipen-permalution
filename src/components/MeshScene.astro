@@ -1,0 +1,106 @@
+---
+// The collector, drawn: fog drifts through a mesh, beads form on it, drops run
+// down into the gutter and the tank fills. Decorative; the steps carry the meaning.
+const drops = [
+  { x: 206, d: 0.0 }, { x: 236, d: 1.9 }, { x: 263, d: 0.7 }, { x: 292, d: 2.6 }, { x: 318, d: 1.2 },
+  { x: 347, d: 3.1 }, { x: 374, d: 0.4 }, { x: 401, d: 2.2 }, { x: 222, d: 3.6 }, { x: 386, d: 1.6 },
+];
+const beads = Array.from({ length: 34 }, (_, i) => ({
+  x: 200 + ((i * 53) % 216),
+  y: 96 + ((i * 37) % 118),
+  r: 1.6 + ((i * 7) % 5) * 0.35,
+  d: (i % 9) * 0.45,
+}));
+const wisps = [
+  { y: 112, rx: 74, ry: 11, dur: 16, delay: 0 },
+  { y: 150, rx: 92, ry: 13, dur: 21, delay: -7 },
+  { y: 186, rx: 66, ry: 10, dur: 18, delay: -12 },
+  { y: 128, rx: 58, ry: 9, dur: 24, delay: -3 },
+  { y: 205, rx: 84, ry: 12, dur: 27, delay: -17 },
+];
+---
+<svg class="scene" viewBox="0 0 600 360" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="oklch(0.9 0.018 225)" />
+      <stop offset="0.75" stop-color="var(--fog-1)" />
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--sand-deep)" />
+      <stop offset="1" stop-color="var(--earth)" />
+    </linearGradient>
+    <pattern id="mesh" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+      <path d="M0 0H8M0 0V8" stroke="var(--ink)" stroke-opacity="0.55" stroke-width="0.9" fill="none" />
+    </pattern>
+    <filter id="soft" x="-40%" y="-120%" width="180%" height="340%">
+      <feGaussianBlur stdDeviation="5" />
+    </filter>
+    <clipPath id="tankClip"><rect x="484" y="238" width="66" height="62" rx="3" /></clipPath>
+  </defs>
+
+  <rect width="600" height="360" fill="url(#sky)" />
+  <path d="M0 300 C120 250 210 262 300 270 S470 236 600 252 V360 H0Z" fill="url(#hill)" />
+
+  <g filter="url(#soft)" class="fog back">
+    {wisps.slice(0, 3).map((w) => <ellipse class="wisp" cx="0" cy={w.y} rx={w.rx} ry={w.ry} style={`--dur:${w.dur}s;--delay:${w.delay}s`} />)}
+  </g>
+
+  <!-- guy lines, poles, shade-cloth mesh -->
+  <path d="M189 80 L120 290 M423 80 L500 286" stroke="var(--ink-2)" stroke-width="1.2" />
+  <rect x="186" y="78" width="6" height="200" rx="1" fill="var(--ink)" />
+  <rect x="420" y="78" width="6" height="200" rx="1" fill="var(--ink)" />
+  <rect x="192" y="88" width="228" height="134" fill="var(--ink)" fill-opacity="0.08" />
+  <rect x="192" y="88" width="228" height="134" fill="url(#mesh)" />
+  <rect x="192" y="88" width="228" height="134" fill="none" stroke="var(--ink)" stroke-width="2.5" />
+
+  <g class="beads">
+    {beads.map((b) => <circle cx={b.x} cy={b.y} r={b.r} style={`--d:${b.d}s`} />)}
+  </g>
+  <g class="drops">
+    {drops.map((p) => <circle class="drop" cx={p.x} cy="98" r="3.4" style={`--d:${p.d}s`} />)}
+  </g>
+
+  <g filter="url(#soft)" class="fog front">
+    {wisps.slice(3).map((w) => <ellipse class="wisp" cx="0" cy={w.y} rx={w.rx} ry={w.ry} style={`--dur:${w.dur}s;--delay:${w.delay}s`} />)}
+  </g>
+
+  <!-- gutter, pipe, tank -->
+  <path d="M186 224 H430 l-7 11 H193Z" fill="var(--ink-2)" />
+  <path d="M424 230 C468 230 466 268 486 268" stroke="var(--ink-2)" stroke-width="6" fill="none" stroke-linecap="round" />
+  <rect x="482" y="236" width="70" height="66" rx="5" fill="var(--fog-0)" stroke="var(--ink)" stroke-width="2.5" />
+  <rect class="level" x="484" y="238" width="66" height="62" fill="var(--water)" clip-path="url(#tankClip)" />
+  <path d="M496 236 V302 M510 236 V302 M524 236 V302 M538 236 V302" stroke="var(--ink)" stroke-opacity="0.25" stroke-width="1" />
+</svg>
+
+<style>
+  .scene { width: 100%; height: auto; display: block; }
+  .wisp { fill: oklch(0.99 0.004 85); opacity: 0.92; animation: drift var(--dur) linear infinite; animation-delay: var(--delay); }
+  .fog.front .wisp { opacity: 0.6; }
+  @keyframes drift { from { transform: translateX(-120px); } to { transform: translateX(740px); } }
+
+  .beads circle { fill: var(--water); opacity: 0.25; animation: bead 4.2s ease-in-out infinite; animation-delay: var(--d); }
+  @keyframes bead { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.85; } }
+
+  .drop { fill: var(--water); opacity: 0; animation: run 3.8s cubic-bezier(0.55, 0, 0.9, 0.4) infinite; animation-delay: var(--d); }
+  @keyframes run {
+    0% { opacity: 0; transform: translateY(0) scale(0.4); }
+    15% { opacity: 1; transform: translateY(6px) scale(1); }
+    88% { opacity: 1; transform: translateY(124px) scale(1); }
+    100% { opacity: 0; transform: translateY(130px) scale(0.6); }
+  }
+
+  .level { transform-box: fill-box; transform-origin: bottom; animation: fill 10s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+  @keyframes fill { 0% { transform: scaleY(0.1); } 88%, 100% { transform: scaleY(0.9); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wisp, .beads circle, .drop, .level { animation: none; }
+    .wisp { transform: translateX(300px); }
+    .fog.back .wisp:nth-child(2) { transform: translateX(140px); }
+    .fog.front .wisp { transform: translateX(470px); }
+    .beads circle { opacity: 0.6; }
+    .drop { opacity: 1; }
+    .drop:nth-child(odd) { transform: translateY(58px); }
+    .drop:nth-child(even) { transform: translateY(102px); }
+    .level { transform: scaleY(0.6); }
+  }
+</style>

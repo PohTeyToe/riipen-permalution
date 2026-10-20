@@ -1,0 +1,11 @@
+---
+// Wraps one factual phrase. In the Claims view it is tinted and numbered,
+// and the number links to its row in the register at the foot of the page.
+import { claim, claimNumber } from '../data/claims';
+
+interface Props { id: string }
+const { id } = Astro.props;
+const c = claim(id);
+const n = claimNumber(id);
+---
+<span class="claim" data-status={c.status} data-claim={id}><slot /><a class="claim-mark" href={`#claim-${n}`} aria-label={`Source ${n}`}>{n}</a></span>

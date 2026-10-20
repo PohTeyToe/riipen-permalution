@@ -1,0 +1,75 @@
+---
+import { CLAIMS } from '../data/claims';
+import { SRC } from '../data/sources';
+import quality from '../data/quality.json';
+import type { Dict, Lang } from '../i18n';
+
+interface Props { t: Dict; lang: Lang }
+const { t, lang } = Astro.props;
+const q = (quality as { runs: Record<string, any> }).runs[lang];
+const kb = q ? Math.round(q.transferBytes / 1024) : 0;
+const claimText = t.claims as Record<string, string>;
+---
+<footer class="site-footer">
+  <div class="wrap">
+    {q && (
+      <section class="quality" aria-labelledby="quality-h">
+        <h2 id="quality-h" class="q-title">{t.footer.quality}</h2>
+        <ul class="scores">
+          <li><span class="score">{q.performance}</span><span>{t.footer.perf}</span></li>
+          <li><span class="score">{q.accessibility}</span><span>{t.footer.a11y}</span></li>
+          <li><span class="score">{q.bestPractices}</span><span>{t.footer.bp}</span></li>
+          <li><span class="score">{q.seo}</span><span>{t.footer.seo}</span></li>
+          <li><span class="score">{q.axeViolations}</span><span>{t.footer.axe}</span></li>
+          <li><span class="score">{kb}&nbsp;KB</span><span>{t.footer.weight}</span></li>
+        </ul>
+        <p class="q-note">{t.footer.measured} {q.date} · lighthouse {q.lighthouseVersion} · axe-core {q.axeVersion}. {q.seo < 100 && t.footer.seoNote}</p>
+      </section>
+    )}
+
+    <details class="register" id="claims">
+      <summary><h2>{t.footer.claimsTitle} ({CLAIMS.length})</h2></summary>
+      <ol>
+        {CLAIMS.map((c, i) => (
+          <li id={`claim-${i + 1}`} data-status={c.status}>
+            <p><span class={`tag ${c.status}`}>{c.status === 'confirm' ? t.footer.claimsConfirm : t.footer.claimsSourced}</span> {claimText[c.id]}</p>
+            <p class="srcs">
+              {c.sources.map((k, j) => (
+                <>{j > 0 && <br />}<a href={SRC[k].url} rel="noopener" target="_blank">{SRC[k].label}</a></>
+              ))}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </details>
+
+    <div class="f-bottom">
+      <p>{t.footer.concept}</p>
+      <p><a href="https://github.com/PohTeyToe/riipen-permalution" rel="noopener" target="_blank">{t.footer.code}</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--fog-2); padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem) 2rem; font-size: var(--step--1); }
+  .site-footer .wrap { display: grid; gap: 2rem; }
+  .q-title { font-size: var(--step-0); font-family: var(--font-body); font-variation-settings: normal; font-weight: 700; letter-spacing: 0; margin-bottom: 0.6rem; }
+  .scores { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .scores li { display: inline-flex; align-items: baseline; gap: 0.45rem; padding: 0.4rem 0.75rem; border-radius: 999px; background: var(--fog-0); border: 1px solid var(--line); }
+  .score { font-family: var(--font-display); font-variation-settings: 'wdth' 118; font-weight: 800; font-size: 1.05rem; color: var(--ok); font-variant-numeric: tabular-nums; }
+  .q-note { margin-top: 0.6rem; color: var(--ink-2); }
+
+  .register summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 0.6rem; min-height: 44px; }
+  .register summary::-webkit-details-marker { display: none; }
+  .register summary::before { content: '+'; font: 700 1.3rem/1 var(--font-body); width: 1.2rem; }
+  .register[open] summary::before { content: '\2212'; }
+  .register h2 { display: inline; font-size: var(--step-1); }
+  .register ol { margin: 0.8rem 0 0; padding-left: 1.6rem; display: grid; gap: 0.75rem 2.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); }
+  .register li { scroll-margin-top: 1rem; }
+  .register li:target { outline: 2px solid var(--water-ink); outline-offset: 4px; border-radius: 3px; }
+  .tag { display: inline-block; padding: 0.05rem 0.45rem; border-radius: 999px; font-weight: 700; font-size: 0.78rem; background: var(--water-soft); color: var(--ink); }
+  .tag.confirm { background: var(--sand); }
+  .srcs { color: var(--ink-2); overflow-wrap: anywhere; }
+  .srcs a { color: var(--ink-2); }
+  .f-bottom { display: grid; gap: 0.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--ink-2); max-width: 75ch; }
+</style>

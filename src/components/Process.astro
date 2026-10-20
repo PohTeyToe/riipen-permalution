@@ -1,0 +1,46 @@
+---
+import Rich from './Rich.astro';
+import MeshScene from './MeshScene.astro';
+import type { Dict } from '../i18n';
+
+interface Props { t: Dict }
+const { t } = Astro.props;
+---
+<section class="process" id="how" aria-labelledby="how-h">
+  <div class="wrap p-grid">
+    <div class="p-head">
+      <p class="eyebrow">{t.process.eyebrow}</p>
+      <h2 id="how-h">{t.process.heading}</h2>
+      <div class="p-art"><MeshScene /></div>
+    </div>
+    <div>
+      <ol class="steps">
+        {t.process.steps.map((s, i) => (
+          <li style={`--i:${i}`}>
+            <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="p-source"><Rich text={t.process.sourceNote} /></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process { padding-block: clamp(3rem, 2rem + 4vw, 6rem); background: var(--fog-1); }
+  .p-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(1.5rem, 1rem + 3vw, 4rem); align-items: start; }
+  .p-head { display: grid; gap: 1rem; }
+  .p-art { margin-top: 0.5rem; border-radius: 12px; overflow: hidden; background: linear-gradient(var(--fog-1), var(--fog-2)); }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; }
+  .steps li { display: grid; grid-template-columns: 3.2rem 1fr; gap: 0.75rem; padding: 1rem 0; border-top: 1px solid var(--line); }
+  .steps li:last-child { border-bottom: 1px solid var(--line); }
+  .n { font-family: var(--font-display); font-variation-settings: 'wdth' 125; font-weight: 800; font-size: var(--step-2); line-height: 1; color: var(--earth); }
+  .steps h3 { margin-bottom: 0.2rem; }
+  .steps p { color: var(--ink-2); }
+  .p-source { margin-top: 1rem; font-size: 0.85rem; color: var(--ink-3); }
+  @media (max-width: 860px) { .p-grid { grid-template-columns: minmax(0, 1fr); } }
+</style>

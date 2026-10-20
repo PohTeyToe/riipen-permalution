@@ -1,0 +1,9 @@
+---
+// Renders copy where [[claimId:text]] marks a sourced claim.
+import Claim from './Claim.astro';
+import { parseRich } from '../lib/rich';
+
+interface Props { text: string }
+const parts = parseRich(Astro.props.text);
+---
+{parts.map((p) => (p.claim ? <Claim id={p.claim}>{p.text}</Claim> : p.text))}

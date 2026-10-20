@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Rich from './Rich.astro';
+import SiteMap from './SiteMap.astro';
+import Estimate from './Estimate.astro';
+import Journeys from './Journeys.astro';
+import Process from './Process.astro';
+import Proof from './Proof.astro';
+import RequestForm from './RequestForm.astro';
+import Faq from './Faq.astro';
+import Footer from './Footer.astro';
+import { dicts, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = dicts[lang];
+---
+<Base lang={lang} title={t.meta.title} description={t.meta.description} path={lang === 'fr' ? '/fr/' : '/'}>
+  <a class="skip" href="#main">{t.skip}</a>
+  <Header t={t} />
+  <main id="main" tabindex="-1">
+    <section class="hero" aria-labelledby="hero-h">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><Rich text={t.hero.eyebrow} /></p>
+          <h1 id="hero-h"><span class="h1-big">{t.hero.title}</span> <span class="h1-rest">{t.hero.titleRest}</span></h1>
+          <p class="lede"><Rich text={t.hero.lede} /></p>
+          <p class="hero-ctas">
+            <a class="btn btn-primary" href="#request" data-topic="site">{t.hero.primary}</a>
+            <a class="btn btn-ghost" href="#yield">{t.hero.secondary}</a>
+          </p>
+        </div>
+        <SiteMap t={t} />
+      </div>
+    </section>
+    <Estimate t={t} lang={lang} />
+    <Journeys t={t} />
+    <Process t={t} />
+    <Proof t={t} />
+    <RequestForm t={t} />
+    <Faq t={t} />
+  </main>
+  <Footer t={t} lang={lang} />
+  <script>
+    import '../scripts/app';
+  </script>
+</Base>
+
+<style>
+  main:focus { outline: none; }
+  .hero { padding-block: clamp(1.75rem, 1rem + 3vw, 4rem) clamp(2.5rem, 1.5rem + 4vw, 5rem); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 1rem + 3vw, 4rem); align-items: start; }
+  .hero-copy { display: grid; gap: 1.1rem; justify-items: start; padding-top: clamp(0rem, 2vw, 2.5rem); }
+  .hero-copy h1 { display: grid; gap: 0.6rem; }
+  .h1-big { font-size: clamp(3rem, 1.9rem + 5vw, 6.2rem); font-variation-settings: 'wdth' 125; font-weight: 820; line-height: 0.92; letter-spacing: -0.03em; }
+  .h1-rest { font-size: var(--step-2); font-variation-settings: 'wdth' 100; font-weight: 650; line-height: 1.15; color: var(--earth); max-width: 22ch; }
+  .lede { font-size: var(--step-1); line-height: 1.5; color: var(--ink-2); max-width: 40ch; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.4rem; }
+  @media (max-width: 960px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
+</style>
