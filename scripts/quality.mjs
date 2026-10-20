@@ -20,13 +20,16 @@ function lighthouse(url) {
     { stdio: 'inherit', shell: process.platform === 'win32' });
   const r = JSON.parse(readFileSync(out, 'utf8'));
   const pct = (k) => Math.round(r.categories[k].score * 100);
-  const failingSeo = Object.values(r.audits).filter((a) => a.score === 0 && r.categories.seo.auditRefs.some((x) => x.id === a.id)).map((a) => a.id);
+  const seoAudits = r.categories.seo.auditRefs.filter((x) => x.weight > 0).map((x) => r.audits[x.id]);
+  const failingSeo = seoAudits.filter((a) => a.score !== 1).map((a) => a.id);
   return {
     performance: pct('performance'),
     accessibility: pct('accessibility'),
     bestPractices: pct('best-practices'),
     seo: pct('seo'),
     seoFailing: failingSeo,
+    seoPassed: seoAudits.length - failingSeo.length,
+    seoTotal: seoAudits.length,
     lcpMs: Math.round(r.audits['largest-contentful-paint'].numericValue),
     cls: Number(r.audits['cumulative-layout-shift'].numericValue.toFixed(3)),
     transferBytes: r.audits['total-byte-weight'].numericValue,

@@ -1,1 +1,40 @@
-{ "runs": {} }
+{
+  "runs": {
+    "en": {
+      "url": "https://riipen-permalution.vercel.app/",
+      "performance": 92,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 63,
+      "seoFailing": [
+        "is-crawlable"
+      ],
+      "lcpMs": 1765,
+      "cls": 0.148,
+      "transferBytes": 168840,
+      "lighthouseVersion": "12.8.2",
+      "axeViolations": 0,
+      "axeIds": [],
+      "axeVersion": "4.10.2",
+      "date": "2026-10-20"
+    },
+    "fr": {
+      "url": "https://riipen-permalution.vercel.app/fr/",
+      "performance": 88,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 63,
+      "seoFailing": [
+        "is-crawlable"
+      ],
+      "lcpMs": 1660,
+      "cls": 0.227,
+      "transferBytes": 169716,
+      "lighthouseVersion": "12.8.2",
+      "axeViolations": 0,
+      "axeIds": [],
+      "axeVersion": "4.10.2",
+      "date": "2026-10-20"
+    }
+  }
+}

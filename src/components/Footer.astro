@@ -19,11 +19,11 @@ const claimText = t.claims as Record<string, string>;
           <li><span class="score">{q.performance}</span><span>{t.footer.perf}</span></li>
           <li><span class="score">{q.accessibility}</span><span>{t.footer.a11y}</span></li>
           <li><span class="score">{q.bestPractices}</span><span>{t.footer.bp}</span></li>
-          <li><span class="score">{q.seo}</span><span>{t.footer.seo}</span></li>
+          <li><span class="score">{q.seoPassed}/{q.seoTotal}</span><span>{t.footer.seo}</span></li>
           <li><span class="score">{q.axeViolations}</span><span>{t.footer.axe}</span></li>
           <li><span class="score">{kb}&nbsp;KB</span><span>{t.footer.weight}</span></li>
         </ul>
-        <p class="q-note">{t.footer.measured} {q.date} · lighthouse {q.lighthouseVersion} · axe-core {q.axeVersion}. {q.seo < 100 && t.footer.seoNote}</p>
+        <p class="q-note">{t.footer.measured} {q.date} · lighthouse {q.lighthouseVersion} · axe-core {q.axeVersion}. {q.seoPassed < q.seoTotal && t.footer.seoNote}</p>
       </section>
     )}
 
