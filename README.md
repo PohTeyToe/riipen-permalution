@@ -13,7 +13,7 @@ The brief asks for the key journeys (prospective clients, investors, site-analys
 | Site-analysis requests | The hero map. Pick a project, or click anywhere to drop a pin; "Request a site analysis here" carries the coordinates into the form. |
 | Key journeys | "What brings you here?": four paths that each set the form's topic, so one form serves clients, investors, partners and everyone else. |
 | Approved content and claims | "Show sources" (top bar) highlights and numbers each fact about Permalution. The register at the foot lists each one with its public source, and marks performance figures and undisclosed details "confirm before launch". Dates, names and places taken from Permalution's own posts count as sourced. |
-| Inquiry forms, error messages | One form with a topic, inline errors tied to each field, and an error summary that links to them. Nothing is sent; a confirmation shows what would be. Litres take English or French digit grouping (12,000 or 12 000) and refuse decimals rather than guess. |
+| Inquiry forms, error messages | One form with a topic, inline errors tied to each field, and an error summary that links to them. Nothing is sent; a confirmation shows what would be. Litres take 12 000 in either language and 12,000 in English; a French comma or an English point reads as a decimal and is refused rather than guessed. |
 | FAQ interactions | Native `<details>`: keyboard and screen-reader friendly with no script. |
 | Accessibility | Skip link, landmarks, ARIA tabs with arrow keys, visible focus, labels and hints on every field, contrast checked, reduced motion honoured. axe-core runs clean in the checks below. |
 | Basic SEO | Static HTML, one `h1`, title and description per language, canonical, `hreflang` pairs (en-CA, fr-CA, x-default), Open Graph, `lang` on the page. |
@@ -46,6 +46,6 @@ node scripts/quality.mjs https://riipen-permalution.vercel.app   # Lighthouse + 
 - `src/lib/map.ts` projects Natural Earth land (world-atlas 110m) with d3-geo's Equal Earth at build time. The browser gets a finished SVG path.
 - `src/lib/equal-earth.ts` is a small hand-written Equal Earth forward and inverse, so a click becomes a latitude and longitude without shipping d3. Tests check it against d3 to six decimals.
 - `src/i18n/en.ts` and `fr.ts` hold all copy. `[[claimId:text]]` marks a sourced claim; `Rich.astro` renders it and the claims view numbers it.
-- `src/scripts/app.ts` is the only client script: tabs, map pin, estimate slider, claims toggle, form validation. Without it the page still reads top to bottom: every project and journey panel shows, the slider is disabled, and the FAQ works.
+- `src/scripts/app.ts` is the only client script: tabs, map pin, estimate slider, claims toggle, form validation. Without it the page still reads top to bottom: every project and journey panel shows, the slider and the sources switch are off, and the FAQ works. If the script fails to load, the page falls back to that layout.
 
 The "Measured on this page" strip in the footer is the output of `scripts/quality.mjs` against the live URL (Lighthouse mobile preset, axe-core). Because the live page sends `X-Robots-Tag: noindex` on purpose, Lighthouse's SEO score counts that against it; the strip says so.

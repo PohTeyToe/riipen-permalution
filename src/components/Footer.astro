@@ -35,7 +35,7 @@ const claimText = t.claims as Record<string, string>;
             <p><span class={`tag ${c.status}`}>{c.status === 'confirm' ? t.footer.claimsConfirm : t.footer.claimsSourced}</span> {claimText[c.id]}</p>
             <p class="srcs">
               {c.sources.map((k, j) => (
-                <>{j > 0 && <br />}<a href={SRC[k].url} rel="noopener" target="_blank">{sourceLabel(k, lang)}</a></>
+                <>{j > 0 && <br />}<a href={SRC[k].url} rel="noopener" target="_blank">{sourceLabel(k, lang).split(/« ([^»]+) »/).map((part, n) => (n % 2 ? <>« <span lang="en">{part}</span> »</> : part))}</a></>
               ))}
             </p>
           </li>

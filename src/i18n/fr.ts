@@ -7,7 +7,7 @@ export const fr: Dict = {
   meta: {
     title: "Permalution : de l’eau à partir du brouillard et des nuages (concept de refonte)",
     description:
-      "Un concept de refonte pour Permalution : une carte des projets d’eau de brouillard, une demande d’analyse de site, et chaque affirmation liée à sa source. Réalisé par Abdallah Safi; sans lien avec Permalution.",
+      "Un concept de refonte pour Permalution : une carte des projets d’eau de brouillard, une demande d’analyse de site, et une source publique pour chaque fait sur l’entreprise. Réalisé par Abdallah Safi; sans lien avec Permalution.",
   },
   concept: {
     label: 'Un concept de refonte par Abdallah Safi. Sans lien avec Permalution.',
@@ -35,7 +35,7 @@ export const fr: Dict = {
     eyebrow: "Eau de brouillard et de nuages · [[hq:Sherbrooke]]",
     title: 'Le brouillard, c’est de l’eau.',
     titleRest: 'Nous le trouvons, le mesurons et le récoltons.',
-    lede: "Permalution cartographie les endroits où le brouillard et les nuages bas sont denses et réguliers, mesure un site avant toute construction, puis installe des collecteurs qui [[zeroEnergy:fonctionnent sans aucune énergie]]. L’eau va aux [[sectors:fermes, mines, industries et communautés]].",
+    lede: "Permalution [[fogAtlas:cartographie les endroits où le brouillard et les nuages bas sont denses et réguliers]], [[waterRadar:mesure un site avant toute construction]], puis [[zeroEnergy:installe des collecteurs qui fonctionnent sans aucune énergie]]. L’eau va aux [[sectors:fermes, mines, industries et communautés]].",
     primary: 'Demander une analyse de site',
     secondary: "Combien d’eau?",
   },
@@ -133,7 +133,7 @@ export const fr: Dict = {
       other: {
         tab: 'Autre chose',
         title: 'Presse, carrières ou une question.',
-        body: 'Envoyez-la par le même formulaire; elle parvient à la bonne personne.',
+        body: 'Envoyez-la par le même formulaire, avec son sujet déjà choisi.',
         cta: 'Écrivez-nous',
         topic: 'other',
       },
@@ -160,7 +160,7 @@ export const fr: Dict = {
       { claim: 'relx', what: 'RELX Environmental Challenge', detail: 'Deuxième place' },
       { claim: 'weEmpower', what: 'WE Empower UN SDG Challenge', detail: 'Tatiana Estevez, lauréate, 2024' },
       { claim: 'rbc', what: 'RBC Women in Cleantech Accelerator', detail: 'Cohorte 2024 à 2026' },
-      { claim: 'nexterre', what: 'Nexterre, technologies propres pour l\'agriculture', detail: 'Phase 1, 2026' },
+      { claim: 'nexterre', what: 'Nexterre, technologies propres pour l’agriculture', detail: 'Phase 1, 2026' },
       { claim: 'irap', what: 'NRC IRAP (PARI-CNRC)', detail: 'R&D sur un collecteur hybride, 2024 à 2025' },
       { claim: 'startupfest', what: 'Startupfest', detail: "Prix d’investissement Femmes en technologie, 2022" },
     ],
@@ -180,7 +180,7 @@ export const fr: Dict = {
     topicLegend: "De quoi s’agit-il?",
     topics: { site: 'Une analyse de site', invest: 'Un investissement', partner: 'Un partenariat', other: 'Autre chose' },
     location: 'Emplacement',
-    locationHint: 'Un nom de lieu ou des coordonnées. Un clic sur la carte remplit ce champ.',
+    locationHint: 'Un nom de lieu ou des coordonnées. Sur la carte, choisissez un point, puis « Demander une analyse de site ici ».',
     sector: 'Secteur',
     sectorChoose: 'Choisir',
     sectors: {
@@ -204,7 +204,7 @@ export const fr: Dict = {
     optional: 'facultatif',
     errorsTitle: 'Corrigez ces éléments pour envoyer votre demande',
     errors: {
-      location: 'Entrez un lieu, ou cliquez sur un point de la carte.',
+      location: 'Entrez un lieu, ou choisissez un point sur la carte et appuyez sur « Demander une analyse de site ici ».',
       sector: 'Choisissez le secteur le plus proche du vôtre.',
       needNumber: 'Entrez un nombre entier de litres, par exemple 5000.',
       needRange: 'Entrez un nombre entre 1 et 10 000 000.',

@@ -9,7 +9,7 @@ const repo = 'https://github.com/PohTeyToe/riipen-permalution';
   <div class="wrap concept-row">
     <p>{t.concept.label}{t.concept.translated && <> <span class="tr">{t.concept.translated}</span></>}</p>
     <div class="concept-actions">
-      <button type="button" class="claims-toggle" aria-pressed="false" data-claims-toggle>
+      <button type="button" class="claims-toggle" aria-pressed="false" data-claims-toggle data-enhance>
         <span class="sw" aria-hidden="true"></span>{t.concept.claims}
       </button>
       <a href={repo} rel="noopener" target="_blank">{t.concept.code}</a>

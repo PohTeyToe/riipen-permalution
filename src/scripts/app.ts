@@ -75,15 +75,20 @@ function tabs(list: HTMLElement, onSelect?: (tab: HTMLElement) => void) {
 
 const journeyTabs = $$('[data-tabs]').map((list) => tabs(list));
 
-// The "Investors" link lands on the journeys section with the investor path open.
+// The "Investors" link lands on the journeys section with the investor path open,
+// on a direct visit and on every click (a repeat click doesn't fire hashchange).
 const HASH_TABS: Record<string, string> = { '#investors': 'jt-invest' };
-function tabFromHash() {
-  const id = HASH_TABS[location.hash];
+function tabForHash(hash: string) {
+  const id = HASH_TABS[hash];
   const tab = id && document.getElementById(id);
   if (tab && journeyTabs[0]) journeyTabs[0](tab);
 }
-window.addEventListener('hashchange', tabFromHash);
-tabFromHash();
+document.addEventListener('click', (e) => {
+  const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]');
+  if (a) tabForHash(a.hash);
+});
+window.addEventListener('hashchange', () => tabForHash(location.hash));
+tabForHash(location.hash);
 
 /* ---------- Map ---------- */
 const mapBlock = $('[data-map]');
@@ -225,7 +230,7 @@ if (form) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const f = read();
-    const errs = validate(f);
+    const errs = validate(f, document.documentElement.lang.startsWith('fr') ? 'fr' : 'en');
     for (const [field, id] of Object.entries(fieldIds)) {
       const err = errs.find((x) => x.field === field);
       const input = document.getElementById(id)!;
@@ -280,3 +285,6 @@ if (form) {
     form.querySelector<HTMLElement>('input, select, textarea')?.focus();
   });
 }
+
+// Every handler is in place; Base.astro keeps the enhanced layout only if this runs.
+document.documentElement.classList.add('ready');

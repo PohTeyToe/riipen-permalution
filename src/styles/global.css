@@ -58,7 +58,7 @@
 [hidden] { display: none !important; }
 /* Progressive enhancement: tab lists appear only with script; until then every panel shows. */
 html:not(.js) [data-enhance] { display: none !important; }
-.fonts-wait body { visibility: hidden; }
+@media screen { .fonts-wait body { visibility: hidden; } }
 .js [data-initial-hidden] { display: none !important; }
 
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 1rem; }

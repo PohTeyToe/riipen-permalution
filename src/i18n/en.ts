@@ -6,7 +6,7 @@ export const en = {
   meta: {
     title: 'Permalution: water from fog and clouds (redesign concept)',
     description:
-      'A redesign concept for Permalution: a map of fog water projects, a site-analysis request, and every claim linked to its source. Built by Abdallah Safi; not affiliated with Permalution.',
+      'A redesign concept for Permalution: a map of fog water projects, a site-analysis request, and a public source for each fact about the company. Built by Abdallah Safi; not affiliated with Permalution.',
   },
   concept: {
     label: 'A redesign concept by Abdallah Safi. Not affiliated with Permalution.',
@@ -34,7 +34,7 @@ export const en = {
     eyebrow: 'Fog and cloud water · [[hq:Sherbrooke]]',
     title: 'Fog is water.',
     titleRest: 'We find it, measure it and collect it.',
-    lede: 'Permalution maps where fog and low cloud are dense and regular, measures a site before anything is built, and installs collectors that [[zeroEnergy:run on zero energy]]. The water goes to [[sectors:farms, mines, industry and communities]].',
+    lede: 'Permalution [[fogAtlas:maps where fog and low cloud are dense and regular]], [[waterRadar:measures a site before anything is built]], and [[zeroEnergy:installs collectors that run on zero energy]]. The water goes to [[sectors:farms, mines, industry and communities]].',
     primary: 'Request a site analysis',
     secondary: 'How much water?',
   },
@@ -132,7 +132,7 @@ export const en = {
       other: {
         tab: 'Something else',
         title: 'Press, careers, or a question.',
-        body: 'Send it through the same form; it reaches the right person.',
+        body: 'Send it through the same form, with its topic set.',
         cta: 'Write to us',
         topic: 'other',
       },
@@ -179,7 +179,7 @@ export const en = {
     topicLegend: 'What is this about?',
     topics: { site: 'A site analysis', invest: 'Investing', partner: 'A partnership', other: 'Something else' },
     location: 'Location',
-    locationHint: 'A place name or coordinates. Clicking the map fills this in.',
+    locationHint: 'A place name or coordinates. On the map, pick a spot, then "Request a site analysis here".',
     sector: 'Sector',
     sectorChoose: 'Choose one',
     sectors: {
@@ -203,7 +203,7 @@ export const en = {
     optional: 'optional',
     errorsTitle: 'Fix these to send your request',
     errors: {
-      location: 'Enter a place, or click a spot on the map.',
+      location: 'Enter a place, or pick a spot on the map and press "Request a site analysis here".',
       sector: 'Choose the sector closest to yours.',
       needNumber: 'Enter whole litres as a number, like 5000.',
       needRange: 'Enter a number between 1 and 10,000,000.',

@@ -1,4 +1,5 @@
 ---
+import Claim from './Claim.astro';
 import Rich from './Rich.astro';
 import MeshScene from './MeshScene.astro';
 import type { Dict } from '../i18n';
@@ -20,7 +21,7 @@ const { t } = Astro.props;
             <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             <div>
               <h3>{s.title}</h3>
-              <p>{s.body}</p>
+              <p><Claim id="process">{s.body}</Claim></p>
             </div>
           </li>
         ))}

@@ -16,6 +16,8 @@ export interface Claim {
 
 export const CLAIMS: Claim[] = [
   { id: 'hq', status: 'sourced', sources: ['linkedinCompany'] },
+  { id: 'fogAtlas', status: 'sourced', sources: ['products'] },
+  { id: 'waterRadar', status: 'sourced', sources: ['products'] },
   { id: 'zeroEnergy', status: 'sourced', sources: ['riipen', 'mars'] },
   { id: 'sectors', status: 'sourced', sources: ['riipen'] },
   { id: 'coatepec', status: 'sourced', sources: ['coatepecPost'] },
@@ -26,8 +28,6 @@ export const CLAIMS: Claim[] = [
   { id: 'industrialYield', status: 'confirm', sources: ['products'] },
   { id: 'premiumYield', status: 'confirm', sources: ['products'] },
   { id: 'process', status: 'sourced', sources: ['coatepecPost'] },
-  { id: 'fogAtlas', status: 'sourced', sources: ['products'] },
-  { id: 'waterRadar', status: 'sourced', sources: ['products'] },
   { id: 'waterCanada', status: 'sourced', sources: ['waterCanadaPost'] },
   { id: 'relx', status: 'sourced', sources: ['asu2026'] },
   { id: 'weEmpower', status: 'sourced', sources: ['asu2024'] },

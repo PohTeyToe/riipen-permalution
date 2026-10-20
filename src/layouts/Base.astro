@@ -16,7 +16,16 @@ const alt = { en: '/', fr: '/fr/' };
 <html lang={lang === 'fr' ? 'fr-CA' : 'en-CA'}>
   <head>
     <meta charset="utf-8" />
-    <script is:inline>document.documentElement.classList.add('js', 'fonts-wait'); setTimeout(() => document.documentElement.classList.remove('fonts-wait'), 1000);</script>
+    <script is:inline>
+      {
+        // 'js' turns on the enhanced layout before first paint. If app.ts never
+        // marks the page ready (failed to load or threw), fall back to the no-JS layout.
+        const d = document.documentElement;
+        d.classList.add('js', 'fonts-wait');
+        setTimeout(() => d.classList.remove('fonts-wait'), 1000);
+        addEventListener('load', () => { if (!d.classList.contains('ready')) d.classList.remove('js'); });
+      }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
