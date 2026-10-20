@@ -16,9 +16,8 @@ const alt = { en: '/', fr: '/fr/' };
 <html lang={lang === 'fr' ? 'fr-CA' : 'en-CA'}>
   <head>
     <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add('js', 'fonts-wait'); setTimeout(() => document.documentElement.classList.remove('fonts-wait'), 1000);</script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="preload" href="/fonts/archivo-wdth-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/schibsted-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={site + path} />
@@ -34,6 +33,14 @@ const alt = { en: '/', fr: '/fr/' };
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
+    <script is:inline>
+      // The fonts are inlined but decode a moment after the first layout. Hold the page
+      // hidden until they are ready (1 s at most), so the headline never reflows.
+      {
+        const show = () => document.documentElement.classList.remove('fonts-wait');
+        Promise.all(['800 1em "Archivo Variable"', '1em "Schibsted Grotesk Variable"'].map((f) => document.fonts.load(f))).then(show, show);
+      }
+    </script>
     <slot />
   </body>
 </html>

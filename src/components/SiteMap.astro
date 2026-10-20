@@ -1,13 +1,14 @@
 ---
 import Rich from './Rich.astro';
+import Claim from './Claim.astro';
 import { frame, landPath, MAP_H, MAP_W, parallel, project } from '../lib/map';
 import { HQ, SITES } from '../data/sites';
 import { claim } from '../data/claims';
-import { SRC } from '../data/sources';
-import type { Dict } from '../i18n';
+import { SRC, sourceLabel } from '../data/sources';
+import type { Dict, Lang } from '../i18n';
 
-interface Props { t: Dict }
-const { t } = Astro.props;
+interface Props { t: Dict; lang: Lang }
+const { t, lang } = Astro.props;
 
 const land = landPath();
 const pct = (lon: number, lat: number) => {
@@ -30,7 +31,7 @@ const panelId = (id: string) => `site-${id}`;
 <div class="map-block" data-map data-frame={JSON.stringify(frame)} data-w={MAP_W} data-h={MAP_H} data-dirs={t.map.dirs}>
   <div class="map-head">
     <h2 class="map-title" id="projects">{t.map.heading}</h2>
-    <div class="site-tabs" role="tablist" aria-labelledby="projects">
+    <div class="site-tabs" role="tablist" aria-labelledby="projects" data-enhance>
       {SITES.map((s, i) => (
         <button
           role="tab"
@@ -70,39 +71,47 @@ const panelId = (id: string) => `site-${id}`;
       </g>
     </svg>
 
-    <span class="hq" style={hq} title={t.map.hq}><span class="hq-mark" aria-hidden="true"></span><span class="hq-label">Sherbrooke</span></span>
+    <span class="hq" style={hq} aria-hidden="true"><span class="hq-mark"></span><span class="hq-label">Sherbrooke</span></span>
 
     {SITES.map((s, i) => (
-      <button
+      <span
         class="pin"
         style={pct(s.lon, s.lat)}
         data-site={s.id}
         data-side={s.id === 'coatepec' ? 'right' : 'left'}
+        data-on={i === 0 ? 'true' : 'false'}
         aria-hidden="true"
-        tabindex="-1"
-        aria-pressed={i === 0 ? 'true' : 'false'}
       >
         <span class="pin-dot"></span><span class="pin-label">{t.sites[s.id].short}</span>
-      </button>
+      </span>
     ))}
 
     <span class="drop-pin" data-drop hidden aria-hidden="true"></span>
     <p class="map-hint">{t.map.caption}</p>
   </div>
 
-  <div class="map-legend" aria-hidden="true">
-    <span><i class="lg-pin"></i>{t.map.legendProject}</span>
-    <span><i class="lg-hq"></i>{t.map.legendHq}</span>
-    <span><i class="lg-fog"></i>{t.map.legendFog}</span>
-  </div>
+  <p class="map-legend">
+    <span><i class="lg-pin" aria-hidden="true"></i>{t.map.legendProject}</span>
+    <span><i class="lg-hq" aria-hidden="true"></i>{t.map.legendHq}</span>
+    <span><i class="lg-fog" aria-hidden="true"></i>{t.map.legendFog}</span>
+    <span>{t.map.pinsNote}</span>
+  </p>
 
   <div class="panels">
+    <article class="site-panel pick-panel" id="site-pick" hidden tabindex="-1" aria-live="polite" aria-labelledby="pick-h">
+      <p class="site-status"><span class="chip chip-ink" id="pick-h">{t.map.pickTitle}</span> <span data-coords></span></p>
+      <p class="site-story"><Rich text={t.map.pickBody} /></p>
+      <p class="pick-actions">
+        <a class="btn btn-primary" href="#request" data-pick-cta>{t.map.pickCta}</a>
+        <button class="btn btn-ghost" type="button" data-pick-clear>{t.map.pickClear}</button>
+      </p>
+    </article>
     {SITES.map((s, i) => {
       const site = t.sites[s.id];
       const c = claim(s.claim);
       return (
-        <div class="site-panel" id={panelId(s.id)} role="tabpanel" aria-labelledby={`tab-${s.id}`} hidden={i !== 0}>
-          <p class="site-status"><span class="chip">{site.status}</span> {site.partner}</p>
+        <div class="site-panel" id={panelId(s.id)} role="tabpanel" aria-labelledby={`tab-${s.id}`} data-initial-hidden={i !== 0 ? '' : undefined}>
+          <p class="site-status"><Claim id={s.claim}><span class="chip">{site.status}</span> {site.partner}</Claim></p>
           <h3>{site.name}<span class="site-country">, {site.country}</span></h3>
           <p class="site-story"><Rich text={site.story} /></p>
           {site.quote && (
@@ -115,20 +124,12 @@ const panelId = (id: string) => `site-${id}`;
           <p class="site-sources">
             <span>{t.map.sourcesLabel}:</span>{' '}
             {c.sources.map((k, j) => (
-              <>{j > 0 && ' · '}<a href={SRC[k].url} rel="noopener" target="_blank">{SRC[k].label.split(':')[0].split(',')[0]}</a></>
+              <>{j > 0 && ' · '}<a href={SRC[k].url} rel="noopener" target="_blank">{sourceLabel(k, lang).split(':')[0].split(',')[0].trim()}</a></>
             ))}
           </p>
         </div>
       );
     })}
-    <article class="site-panel pick-panel" id="site-pick" hidden tabindex="-1" aria-live="polite">
-      <p class="site-status"><span class="chip chip-ink">{t.map.pickTitle}</span> <span data-coords></span></p>
-      <p class="site-story">{t.map.pickBody}</p>
-      <p class="pick-actions">
-        <a class="btn btn-primary" href="#request" data-pick-cta>{t.map.pickCta}</a>
-        <button class="btn btn-ghost" type="button" data-pick-clear>{t.map.pickClear}</button>
-      </p>
-    </article>
     <p class="reported"><Rich text={t.map.reported} /></p>
   </div>
 </div>
@@ -157,15 +158,15 @@ const panelId = (id: string) => `site-${id}`;
   .fog ellipse { fill: var(--fog-0); opacity: 0.9; animation: breathe 7s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -1.3s); transform-box: fill-box; transform-origin: center; }
   @keyframes breathe { from { transform: translateX(-6px) scale(0.92); opacity: 0.65; } to { transform: translateX(8px) scale(1.06); opacity: 0.95; } }
 
-  .hq, .pin, .drop-pin { position: absolute; transform: translate(-50%, -50%); }
-  .hq { display: inline-flex; align-items: center; gap: 0.3rem; pointer-events: none; }
-  .hq-mark { width: 9px; height: 9px; background: var(--ink); transform: rotate(45deg); }
-  .hq-label { font: 600 0.72rem/1 var(--font-body); color: var(--ink); background: color-mix(in oklch, var(--fog-0) 80%, transparent); padding: 0.15rem 0.3rem; border-radius: 3px; }
+  .pin, .drop-pin { position: absolute; transform: translate(-50%, -50%); }
+  .hq { position: absolute; width: 0; height: 0; pointer-events: none; }
+  .hq-mark { position: absolute; left: -4.5px; top: -4.5px; width: 9px; height: 9px; background: var(--ink); transform: rotate(45deg); }
+  .hq-label { position: absolute; left: 9px; top: -0.55rem; white-space: nowrap; font: 600 0.72rem/1 var(--font-body); color: var(--ink); background: color-mix(in oklch, var(--fog-0) 80%, transparent); padding: 0.15rem 0.3rem; border-radius: 3px; }
 
-  .pin { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .pin { display: grid; place-items: center; width: 34px; height: 34px; cursor: pointer; }
   .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--water); box-shadow: 0 0 0 3px var(--fog-0), 0 1px 4px oklch(0.2 0.02 255 / 0.35); transition: transform 200ms var(--ease-out); }
-  .pin[aria-pressed='true'] .pin-dot { background: var(--water-ink); transform: scale(1.25); }
-  .pin[aria-pressed='true']::before {
+  .pin[data-on='true'] .pin-dot { background: var(--water-ink); transform: scale(1.25); }
+  .pin[data-on='true']::before {
     content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 2px solid var(--water-ink);
     animation: ring 2.2s var(--ease-out) infinite;
   }
@@ -188,7 +189,7 @@ const panelId = (id: string) => `site-${id}`;
   }
   .map-hint { width: fit-content; max-width: calc(100% - 1.2rem); background: color-mix(in oklch, var(--fog-0) 85%, transparent); padding: 0.2rem 0.45rem; border-radius: 4px; }
 
-  .map-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.8rem; color: var(--ink-2); }
+  .map-legend { margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.8rem; color: var(--ink-2); }
   .map-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
   .map-legend i { display: inline-block; }
   .lg-pin { width: 10px; height: 10px; border-radius: 50%; background: var(--water); }
@@ -215,7 +216,7 @@ const panelId = (id: string) => `site-${id}`;
   .reported { font-size: 0.85rem; color: var(--ink-2); }
 
   @media (prefers-reduced-motion: reduce) {
-    .fog ellipse, .pin[aria-pressed='true']::before, .site-panel, .drop-pin { animation: none; }
+    .fog ellipse, .pin[data-on='true']::before, .site-panel, .drop-pin { animation: none; }
   }
   @media (max-width: 520px) {
     .pin-label { display: none; }

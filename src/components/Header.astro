@@ -43,7 +43,7 @@ const repo = 'https://github.com/PohTeyToe/riipen-permalution';
       <a class="lang" href={t.nav.switchHref} hreflang={t.nav.switchLang} lang={t.nav.switchLang}>
         <span class="visually-hidden">{t.nav.switchTo}</span><span aria-hidden="true">{t.nav.switchToShort}</span>
       </a>
-      <a class="btn btn-primary h-cta" href="#request" data-topic="site"><span class="cta-long">{t.nav.cta}</span><span class="cta-short" aria-hidden="true">{t.nav.ctaShort}</span></a>
+      <a class="btn btn-primary h-cta" href="#request" data-topic="site">{t.nav.cta}</a>
     </div>
   </div>
 </header>
@@ -78,10 +78,11 @@ const repo = 'https://github.com/PohTeyToe/riipen-permalution';
   .m-menu ul { position: absolute; left: 0; right: 0; top: 100%; margin: 0; padding: 0.5rem var(--gutter) 1rem; list-style: none; background: var(--fog-0); border-bottom: 1px solid var(--line); box-shadow: 0 12px 24px oklch(0.2 0.02 255 / 0.08); }
   .m-menu a { display: block; padding: 0.75rem 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 650; font-size: var(--step-1); }
   @media (max-width: 1060px) { nav { display: none; } .m-menu { display: block; margin-left: auto; } }
-  .cta-short { display: none; }
+  @media (max-width: 360px) { .wordmark { font-size: 1.05rem; } .m-menu summary { padding: 0 0.7rem; } }
   @media (max-width: 520px) {
-    .cta-long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .cta-short { display: inline; }
+    .h-row { gap: 0.6rem; }
+    .h-actions { gap: 0.5rem; }
+    .h-cta { display: none; }
     .concept-row { padding-block: 0.5rem; }
   }
 </style>

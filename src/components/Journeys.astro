@@ -12,7 +12,7 @@ const keys = ['water', 'invest', 'partner', 'other'] as const;
     <div class="j-side">
     <p class="eyebrow">{t.journeys.eyebrow}</p>
     <h2 id="journeys-h">{t.journeys.heading}</h2>
-    <div class="j-tabs" role="tablist" aria-labelledby="journeys-h" aria-orientation="vertical" data-tabs>
+    <div class="j-tabs" role="tablist" aria-labelledby="journeys-h" aria-orientation="vertical" data-tabs data-enhance>
       {keys.map((k, i) => (
         <button role="tab" id={`jt-${k}`} aria-controls={`jp-${k}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
           {tabs[k].tab}
@@ -22,7 +22,7 @@ const keys = ['water', 'invest', 'partner', 'other'] as const;
     </div>
     <div class="j-panels">
     {keys.map((k, i) => (
-      <div class="j-panel" role="tabpanel" id={`jp-${k}`} aria-labelledby={`jt-${k}`} hidden={i !== 0}>
+      <div class="j-panel" role="tabpanel" id={`jp-${k}`} aria-labelledby={`jt-${k}`} data-initial-hidden={i !== 0 ? '' : undefined}>
         <h3><Rich text={tabs[k].title} /></h3>
         <p><Rich text={tabs[k].body} /></p>
         <a class="btn btn-primary" href="#request" data-topic={tabs[k].topic}>{tabs[k].cta}</a>
@@ -47,6 +47,7 @@ const keys = ['water', 'invest', 'partner', 'other'] as const;
   .j-tabs button:hover { color: var(--ink); }
   .j-tabs button[aria-selected='true'] { color: var(--earth); }
   .j-tabs button[aria-selected='true']::after { opacity: 1; transform: none; }
+  .j-panels { display: grid; gap: 1rem; }
   .j-panel { display: grid; gap: 1rem; justify-items: start; padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem); border-radius: 12px; background: var(--sand); animation: rise 320ms var(--ease-out); }
   .j-panel h3 { font-size: var(--step-3); line-height: 1.05; max-width: 20ch; }
   .j-panel p { max-width: 58ch; font-size: var(--step-1); line-height: 1.5; }

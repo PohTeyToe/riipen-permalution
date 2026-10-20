@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validate, type Fields } from './validate';
+import { parseLitres, validate, type Fields } from './validate';
 
 const ok: Fields = {
   topic: 'site', location: 'Coatepec', sector: 'agriculture', need: '5,000', name: 'A', org: '',
@@ -22,5 +22,16 @@ describe('validate', () => {
     expect(validate({ ...ok, need: '12 000' })).toEqual([]);
     expect(validate({ ...ok, need: 'lots' })[0].code).toBe('needNumber');
     expect(validate({ ...ok, need: '0' })[0].code).toBe('needRange');
+  });
+
+  it('takes whole litres in English or French grouping, never decimals', () => {
+    expect(parseLitres('1 000 000')).toBe(1_000_000);
+    expect(parseLitres('1\u202f000')).toBe(1000);
+    expect(parseLitres('12,000')).toBe(12000);
+    expect(parseLitres('12.000')).toBe(12000);
+    expect(parseLitres('0,5')).toBe('invalid');
+    expect(parseLitres('12.5')).toBe('invalid');
+    expect(parseLitres('1,000.000')).toBe('invalid');
+    expect(parseLitres('')).toBe(null);
   });
 });

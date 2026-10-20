@@ -15,8 +15,7 @@ const press = claim('press').sources;
     <ul class="awards">
       {t.proof.awards.map((a) => (
         <li>
-          <span class="what"><Claim id={a.claim}>{a.what}</Claim></span>
-          <span class="detail">{a.detail}</span>
+          <Claim id={a.claim}><span class="what">{a.what}</span> <span class="detail">{a.detail}</span></Claim>
         </li>
       ))}
     </ul>
@@ -36,6 +35,7 @@ const press = claim('press').sources;
   .proof .wrap { display: grid; gap: 1rem; }
   .awards { list-style: none; padding: 0; margin: 0.75rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); border-top: 2px solid var(--ink); }
   .awards li { display: grid; gap: 0.15rem; align-content: start; padding: 0.95rem 0.25rem 0.95rem 0; border-bottom: 1px solid var(--line); }
+  .awards :global(.claim) { display: grid; gap: 0.15rem; justify-items: start; }
   .what { font-family: var(--font-display); font-variation-settings: 'wdth' 108; font-weight: 700; font-size: var(--step-1); line-height: 1.2; }
   .detail { color: var(--ink-2); font-size: var(--step--1); }
   .press { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.8rem; margin-top: 0.5rem; }

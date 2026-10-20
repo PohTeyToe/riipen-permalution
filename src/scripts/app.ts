@@ -41,6 +41,11 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu?.op
 /* ---------- Tabs (projects and journeys) ---------- */
 function tabs(list: HTMLElement, onSelect?: (tab: HTMLElement) => void) {
   const all = () => $$<HTMLElement>('[role="tab"]', list);
+  // Without script every panel shows; with it, only the selected one.
+  for (const t of all()) {
+    const panel = document.getElementById(t.getAttribute('aria-controls')!);
+    if (panel) { panel.hidden = t.getAttribute('aria-selected') !== 'true'; panel.removeAttribute('data-initial-hidden'); }
+  }
   const select = (tab: HTMLElement, focus = false) => {
     for (const t of all()) {
       const on = t === tab;
@@ -68,7 +73,17 @@ function tabs(list: HTMLElement, onSelect?: (tab: HTMLElement) => void) {
   return select;
 }
 
-for (const list of $$('[data-tabs]')) tabs(list);
+const journeyTabs = $$('[data-tabs]').map((list) => tabs(list));
+
+// The "Investors" link lands on the journeys section with the investor path open.
+const HASH_TABS: Record<string, string> = { '#investors': 'jt-invest' };
+function tabFromHash() {
+  const id = HASH_TABS[location.hash];
+  const tab = id && document.getElementById(id);
+  if (tab && journeyTabs[0]) journeyTabs[0](tab);
+}
+window.addEventListener('hashchange', tabFromHash);
+tabFromHash();
 
 /* ---------- Map ---------- */
 const mapBlock = $('[data-map]');
@@ -80,11 +95,11 @@ if (mapBlock) {
   const drop = $('[data-drop]', mapBlock)!;
   const pick = $('#site-pick')!;
   const tabList = $('.site-tabs', mapBlock)!;
-  const pins = $$<HTMLButtonElement>('.pin', mapBlock);
-  let lastSite = 'coatepec';
+  const pins = $$<HTMLElement>('.pin', mapBlock);
+  let lastSite = $<HTMLElement>('[role="tab"][aria-selected="true"]', tabList)?.dataset.site ?? 'coatepec';
   let picked: [number, number] | null = null;
 
-  const markPins = (id: string | null) => pins.forEach((p) => p.setAttribute('aria-pressed', String(p.dataset.site === id)));
+  const markPins = (id: string | null) => pins.forEach((p) => { p.dataset.on = String(p.dataset.site === id); });
   const selectSite = tabs(tabList, (tab) => {
     lastSite = tab.dataset.site!;
     markPins(lastSite);
@@ -114,11 +129,6 @@ if (mapBlock) {
     drop.hidden = false;
     // restart the drop animation
     drop.style.animation = 'none'; void drop.offsetWidth; drop.style.animation = '';
-    for (const t of $$<HTMLElement>('[role="tab"]', tabList)) {
-      t.setAttribute('aria-selected', 'false');
-      document.getElementById(t.getAttribute('aria-controls')!)!.hidden = true;
-    }
-    markPins(null);
     $('[data-coords]', pick)!.textContent = fmt(ll[0], ll[1]);
     pick.hidden = false;
   });
@@ -127,8 +137,7 @@ if (mapBlock) {
     selectSite($<HTMLElement>(`#tab-${lastSite}`)!, true);
   });
   $('[data-pick-cta]', pick)?.addEventListener('click', () => {
-    if (picked) setFormLocation(fmt(picked[0], picked[1]));
-    setTopic('site');
+    openForm('site', picked ? fmt(picked[0], picked[1]) : undefined);
   });
 }
 
@@ -168,25 +177,31 @@ if (est) {
     });
   };
   input.addEventListener('input', render);
+  input.disabled = false;
   render();
 }
 
 /* ---------- Form ---------- */
 const form = $<HTMLFormElement>('[data-form]');
-function setTopic(topic: string) {
-  const r = form?.querySelector<HTMLInputElement>(`input[name="topic"][value="${topic}"]`);
+const doneBox = $('[data-done]');
+/** Every "request" link comes through here: back to editing, topic and place set. */
+function openForm(topic: string, place?: string) {
+  if (!form) return;
+  if (doneBox && !doneBox.hidden) { doneBox.hidden = true; form.hidden = false; }
+  const r = form.querySelector<HTMLInputElement>(`input[name="topic"][value="${topic}"]`);
   if (r) r.checked = true;
-}
-function setFormLocation(v: string) {
-  const el = form?.querySelector<HTMLInputElement>('#f-location');
-  if (el) el.value = v;
+  const loc = form.querySelector<HTMLInputElement>('#f-location')!;
+  if (place !== undefined) loc.value = place;
+  // The link still scrolls to #request; focus lands where the visitor carries on.
+  requestAnimationFrame(() => (place !== undefined ? loc : r)?.focus({ preventScroll: true }));
 }
 document.addEventListener('click', (e) => {
   const a = (e.target as HTMLElement).closest<HTMLElement>('[data-topic]');
-  if (a?.dataset.topic) setTopic(a.dataset.topic);
+  if (a?.dataset.topic) openForm(a.dataset.topic);
 });
 
 if (form) {
+  form.querySelector<HTMLButtonElement>('[data-submit]')!.disabled = false;
   const messages = JSON.parse(form.dataset.errors!) as Record<string, string>;
   const summary = $('[data-error-summary]')!;
   const done = $('[data-done]')!;

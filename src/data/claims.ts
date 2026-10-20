@@ -2,8 +2,10 @@ import type { SourceKey } from './sources';
 
 // The claims register: every factual line on the page, in reading order.
 // 'sourced'  = a public source says it.
-// 'confirm'  = a public source says it, but it is a number or an undisclosed
-//              detail that should get Permalution's written OK before launch.
+// 'confirm'  = a public source says it, but it is a performance figure (yield)
+//              or an undisclosed detail (site, partner) that should get
+//              Permalution's written OK before launch. Dates and names in
+//              their own posts count as sourced.
 export type ClaimStatus = 'sourced' | 'confirm';
 
 export interface Claim {
@@ -13,7 +15,7 @@ export interface Claim {
 }
 
 export const CLAIMS: Claim[] = [
-  { id: 'hq', status: 'sourced', sources: ['riipen'] },
+  { id: 'hq', status: 'sourced', sources: ['linkedinCompany'] },
   { id: 'zeroEnergy', status: 'sourced', sources: ['riipen', 'mars'] },
   { id: 'sectors', status: 'sourced', sources: ['riipen'] },
   { id: 'coatepec', status: 'sourced', sources: ['coatepecPost'] },

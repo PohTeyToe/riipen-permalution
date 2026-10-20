@@ -27,7 +27,7 @@ const and = lang === 'fr' ? 'à' : 'to';
         <label for="units">{t.estimate.sliderLabel}</label>
         <output id="units-out" for="units" data-units-out>{DEFAULT_UNITS}</output>
       </div>
-      <input id="units" type="range" min="1" max={MAX_UNITS} step="1" value={DEFAULT_UNITS} data-units aria-describedby="est-result" />
+      <input id="units" type="range" min="1" max={MAX_UNITS} step="1" value={DEFAULT_UNITS} data-units aria-describedby="est-result" disabled />
       <div class="collectors" aria-hidden="true" data-collectors>
         {Array.from({ length: MAX_UNITS }, (_, i) => <span class:list={['net', { on: i < DEFAULT_UNITS }]}></span>)}
       </div>
