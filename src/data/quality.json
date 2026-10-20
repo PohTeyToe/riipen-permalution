@@ -2,16 +2,18 @@
   "runs": {
     "en": {
       "url": "https://riipen-permalution.vercel.app/",
-      "performance": 92,
+      "performance": 100,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 63,
       "seoFailing": [
         "is-crawlable"
       ],
-      "lcpMs": 1765,
-      "cls": 0.148,
-      "transferBytes": 168840,
+      "seoPassed": 7,
+      "seoTotal": 8,
+      "lcpMs": 1744,
+      "cls": 0.002,
+      "transferBytes": 169136,
       "lighthouseVersion": "12.8.2",
       "axeViolations": 0,
       "axeIds": [],
@@ -20,16 +22,18 @@
     },
     "fr": {
       "url": "https://riipen-permalution.vercel.app/fr/",
-      "performance": 88,
+      "performance": 87,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 63,
       "seoFailing": [
         "is-crawlable"
       ],
-      "lcpMs": 1660,
-      "cls": 0.227,
-      "transferBytes": 169716,
+      "seoPassed": 7,
+      "seoTotal": 8,
+      "lcpMs": 1676,
+      "cls": 0.251,
+      "transferBytes": 170083,
       "lighthouseVersion": "12.8.2",
       "axeViolations": 0,
       "axeIds": [],

@@ -1,5 +1,20 @@
-@import '@fontsource-variable/archivo/wdth.css';
-@import '@fontsource-variable/schibsted-grotesk/wght.css';
+/* Latin subsets only (from @fontsource-variable), preloaded in Base.astro.
+   font-display: optional means the page never reflows when a font arrives. */
+@font-face {
+  font-family: 'Archivo Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url('/fonts/archivo-wdth-latin.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Schibsted Grotesk Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 400 900;
+  src: url('/fonts/schibsted-grotesk-latin.woff2') format('woff2-variations');
+}
 
 /* Colour has one job each: land is warm, water is cool, ink is text. */
 :root {
